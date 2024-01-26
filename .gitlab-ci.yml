@@ -1,0 +1,18 @@
+stages:
+  - deploy
+
+deploy_development:
+  stage: deploy
+  script:
+    - git checkout development
+    - git pull origin development
+    - touch /var/www/staging-dexa-web/staging
+    - echo $DEXA_PASSWORD | su -c "echo '$DEXA_PASSWORD' | sudo -S rm -r /var/www/staging-dexa-web/*" dexa
+    - cp -r * /var/www/staging-dexa-web/
+    - cd /var/www/staging-dexa-web/
+    - composer update
+    - composer install
+    - php artisan storage:link
+    - chmod 777 -R /var/www/staging-dexa-web/storage/
+  tags:
+    - development
